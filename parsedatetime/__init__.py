@@ -282,7 +282,7 @@ class Calendar(object):
 
     @contextlib.contextmanager
     def context(self):
-        ctx = pdtContext()
+        ctx = pdtContext(0, self.ptc.locale.useAccuracy)
         self._ctxStack.push(ctx)
         yield ctx
         ctx = self._ctxStack.pop()
@@ -836,7 +836,7 @@ class Calendar(object):
                 start = datetime.datetime(yr, mth, dy, 17, 0, 0)
                 target = start + datetime.timedelta(days=(4 - wd))
                 sourceTime = target.timetuple()
-            elif offset == 2:
+            elif self.ptc.locale.localeID not in ['ko_KR', 'ja_JP'] and offset == 2:
                 start = datetime.datetime(yr, mth, dy, startHour,
                                           startMinute, startSecond)
                 target = start + datetime.timedelta(days=7)
@@ -852,7 +852,7 @@ class Calendar(object):
             if offset == 0:
                 sourceTime = (yr, mth, dy, 17, 0, 0, wd, yd, isdst)
                 ctx.updateAccuracy(ctx.ACU_HALFDAY)
-            elif offset == 2:
+            elif self.ptc.locale.localeID not in ['ko_KR', 'ja_JP'] and offset == 2:
                 start = datetime.datetime(yr, mth, dy, hr, mn, sec)
                 target = start + datetime.timedelta(days=1)
                 sourceTime = target.timetuple()
@@ -1825,6 +1825,11 @@ class Calendar(object):
                     raise ValueError('sourceTime is not a struct_time')
         else:
             sourceTime = time.localtime()
+
+        if hasattr(self.ptc.locale, 'parseRegex'):
+            retTime, matched = self.ptc.locale.parseRegex(datetimeString, sourceTime)
+            if matched:
+                return retTime, matched
 
         with self.context() as ctx:
             s = datetimeString.lower().strip()

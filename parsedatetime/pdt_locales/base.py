@@ -17,6 +17,8 @@ usesMeridian = True
 uses24 = True
 WeekdayOffsets = {}
 MonthOffsets = {}
+useAccuracy = True
+tryRegexParsing = False
 
 # always lowercase any lookup values - helper code expects that
 Weekdays = [

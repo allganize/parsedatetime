@@ -62,7 +62,7 @@ class pdtContext(object):
 
     """
 
-    __slots__ = ('accuracy',)
+    __slots__ = ('accuracy', 'useAccuracy')
 
     ACU_YEAR = 2 ** 0
     ACU_MONTH = 2 ** 1
@@ -116,7 +116,7 @@ class pdtContext(object):
         'seconds': ACU_SEC,
         'now': ACU_NOW}
 
-    def __init__(self, accuracy=0):
+    def __init__(self, accuracy=0, useAccuracy=True):
         """
         Default constructor of L{pdtContext} class.
 
@@ -127,11 +127,15 @@ class pdtContext(object):
         @return: L{pdtContext} instance
         """
         self.accuracy = accuracy
+        self.useAccuracy = useAccuracy
 
     def updateAccuracy(self, *accuracy):
         """
         Updates current accuracy flag
         """
+        if not self.useAccuracy:
+            return
+
         for acc in accuracy:
             if not isinstance(acc, int):
                 acc = self._ACCURACY_REVERSE_MAPPING[acc]

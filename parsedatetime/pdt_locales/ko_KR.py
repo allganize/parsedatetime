@@ -43,9 +43,9 @@ shortMonths = [
 
 # use the same formats as ICU by default
 dateFormats = {
-    'full': 'yyyy년 MMMM월 d일 EEEE',
-    'long': 'yyyy MMMM d',
-    'medium': 'yyyy MMM d',
+    'full': 'yyyy년 MMMM월 d일',
+    'long': 'yyyy-MM-dd',
+    'medium': 'yyyy-M-d',
     'short': 'yy-M-d'
 }
 
@@ -200,6 +200,9 @@ magnitude = {
 
 ignore = (',', )
 cre_pattern = re.compile(r'(?P<qty>\d+)\s*일\s*(?P<backforth>전|후)', re.IGNORECASE)
+cre_date1 = re.compile(r'((?P<year>(\d{2})?(\d{2}))-)?(?P<month>1[0-2]|0?[1-9])-(?P<day>3[01]|[12][0-9]|0?[1-9])')
+cre_date2 = re.compile(r'((?P<year>(\d{2})?(\d{2}))\/)?(?P<month>1[0-2]|0?[1-9])\/(?P<day>3[01]|[12][0-9]|0?[1-9])')
+cre_date3 = re.compile(r'(((?P<year>(\d{2})?(\d{2}))\s*년)?\s*(?P<month>1[0-2]|0?[1-9])\s*월)?\s*(?P<day>3[01]|[12][0-9]|0?[1-9])\s*일')
 
 
 def parseRegex(s, sourceTime):
@@ -211,4 +214,24 @@ def parseRegex(s, sourceTime):
         dt = datetime.datetime.fromtimestamp(time.mktime(sourceTime)) + datetime.timedelta(days=qty * multiplier)
         sourceTime = dt.timetuple()
         return sourceTime, True
+
+    m = cre_date1.match(s)
+    if not m:
+        m = cre_date2.match(s)
+    if not m:
+        m = cre_date3.match(s)
+
+    if m:
+        year_str = m.group('year')
+        month_str = m.group('month')
+        day_str = m.group('day')
+
+        year = int(year_str) if year_str else sourceTime.tm_year
+        if year < 100:
+            year += 2000
+        month = int(month_str) if month_str else sourceTime.tm_mon
+        day = int(day_str) if day_str else sourceTime.tm_mday
+
+        return datetime.datetime(year, month, day).timetuple(), True
+
     return sourceTime, False

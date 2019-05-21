@@ -82,6 +82,7 @@ class test(unittest.TestCase):
 
     def testDates(self):
         tz = timezone('Asia/Tokyo')
+        tz = tz.localize(datetime.datetime.now()).tzinfo
         today = datetime.datetime.now(tz=tz).replace(hour=0, minute=0, second=0, microsecond=0)
         weekday = today.weekday()
         date_table = {
@@ -138,6 +139,13 @@ class test(unittest.TestCase):
             '再来週の金曜日': today + datetime.timedelta(days=14 - weekday + 4),
             '再来週の土曜日': today + datetime.timedelta(days=14 - weekday + 5),
             '再来週の日曜日': today + datetime.timedelta(days=14 - weekday + 6),
+            '2019-01-04': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '2019-1-4': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '19-01-04': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '19-1-4': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '1/4': datetime.datetime(today.year, 1, 4, tzinfo=tz),
+            '12/8': datetime.datetime(today.year, 12, 8, tzinfo=tz),
+            '99/12/13': datetime.datetime(2099, 12, 13, tzinfo=tz),
         }
 
         for dt_ja in date_table:

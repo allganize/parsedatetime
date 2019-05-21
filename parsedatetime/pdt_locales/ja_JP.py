@@ -161,6 +161,9 @@ magnitude = {
 ignore = (',', 'の')
 cre_days = re.compile(rf'''\b((?P<qty>\d+)|(?P<nums>{'|'.join(numbers)}))\s*日\s*(?P<backforth>前|後)\b''', re.IGNORECASE)
 cre_weeks = re.compile(rf'''\b\s*((?P<modifiers>{'|'.join(Modifiers)})|(?P<nums>{'|'.join(numbers)}))\s*週の?(?P<weekday>{'|'.join(Weekdays)})\b''', re.IGNORECASE)
+cre_date1 = re.compile(r'((?P<year>(\d{2})?(\d{2}))-)?(?P<month>1[0-2]|0?[1-9])-(?P<day>3[01]|[12][0-9]|0?[1-9])')
+cre_date2 = re.compile(r'((?P<year>(\d{2})?(\d{2}))\/)?(?P<month>1[0-2]|0?[1-9])\/(?P<day>3[01]|[12][0-9]|0?[1-9])')
+cre_date3 = re.compile(r'(((?P<year>(\d{2})?(\d{2}))\s*年)?\s*(?P<month>1[0-2]|0?[1-9])\s*月)?\s*(?P<day>3[01]|[12][0-9]|0?[1-9])\s*日')
 
 
 def parseRegex(s, sourceTime):
@@ -201,5 +204,24 @@ def parseRegex(s, sourceTime):
         dt = datetime.datetime.fromtimestamp(time.mktime(sourceTime)) + datetime.timedelta(days=day_delta)
         sourceTime = dt.timetuple()
         return sourceTime, True
+
+    m = cre_date1.match(s)
+    if not m:
+        m = cre_date2.match(s)
+    if not m:
+        m = cre_date3.match(s)
+
+    if m:
+        year_str = m.group('year')
+        month_str = m.group('month')
+        day_str = m.group('day')
+
+        year = int(year_str) if year_str else sourceTime.tm_year
+        if year < 100:
+            year += 2000
+        month = int(month_str) if month_str else sourceTime.tm_mon
+        day = int(day_str) if day_str else sourceTime.tm_mday
+
+        return datetime.datetime(year, month, day).timetuple(), True
 
     return sourceTime, False

@@ -81,6 +81,7 @@ class test(unittest.TestCase):
 
     def testDates(self):
         tz = timezone('Asia/Seoul')
+        tz = tz.localize(datetime.datetime.now()).tzinfo
         today = datetime.datetime.now(tz=tz).replace(hour=0, minute=0, second=0, microsecond=0)
         weekday = today.weekday()
         date_table = {
@@ -129,6 +130,13 @@ class test(unittest.TestCase):
             '지난주 금요일': today + datetime.timedelta(days=-7 - weekday + 4),
             '지난주 토요일': today + datetime.timedelta(days=-7 - weekday + 5),
             '지난주 일요일': today + datetime.timedelta(days=-7 - weekday + 6),
+            '이번주 월요일': today + datetime.timedelta(days=-weekday),
+            '이번주 화요일': today + datetime.timedelta(days=-weekday + 1),
+            '이번주 수요일': today + datetime.timedelta(days=-weekday + 2),
+            '이번주 목요일': today + datetime.timedelta(days=-weekday + 3),
+            '이번주 금요일': today + datetime.timedelta(days=-weekday + 4),
+            '이번주 토요일': today + datetime.timedelta(days=-weekday + 5),
+            '이번주 일요일': today + datetime.timedelta(days=-weekday + 6),
             '다음주 월요일': today + datetime.timedelta(days=7 - weekday),
             '다음주 화요일': today + datetime.timedelta(days=7 - weekday + 1),
             '다음주 수요일': today + datetime.timedelta(days=7 - weekday + 2),
@@ -143,6 +151,19 @@ class test(unittest.TestCase):
             '다다음주 금요일': today + datetime.timedelta(days=14 - weekday + 4),
             '다다음주 토요일': today + datetime.timedelta(days=14 - weekday + 5),
             '다다음주 일요일': today + datetime.timedelta(days=14 - weekday + 6),
+            '2019-01-04': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '2019-1-4': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '19-01-04': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '19-1-4': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '1/4': datetime.datetime(today.year, 1, 4, tzinfo=tz),
+            '12/8': datetime.datetime(today.year, 12, 8, tzinfo=tz),
+            '99/12/13': datetime.datetime(2099, 12, 13, tzinfo=tz),
+            '2019년 01월 04일': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '2019년1월4일': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '19년 01월 04일': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '19년 1월 4일': datetime.datetime(2019, 1, 4, tzinfo=tz),
+            '1월 4일': datetime.datetime(today.year, 1, 4, tzinfo=tz),
+            '12월 8일': datetime.datetime(today.year, 12, 8, tzinfo=tz),
         }
 
         for dt_ko in date_table:

@@ -4,7 +4,7 @@ from .base import *  # noqa
 
 # don't use an unicode string
 localeID = 'fr_FR'
-dateSep = ['\/']
+dateSep = ['/']
 timeSep = [':', 'h']
 meridian = ['du matin', 'du soir']
 usesMeridian = True
@@ -105,7 +105,7 @@ units = {
 # text constants to be used by later regular expressions
 re_values = {
     'specials': 'à|a|le|la|du|de',
-    'timeseparator': '(?:\:|h|\s*heures?\s*)',
+    'timeseparator': r'(?:\:|h|\s*heures?\s*)',
     'rangeseparator': '-',
     'daysuffix': 'ième|ieme|ème|eme|ère|ere|nde',
     'meridian': None,
